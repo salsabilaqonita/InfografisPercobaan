@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografis Hasil Survei Teh Cascara</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '☕';
+            font-size: 60px;
+            position: absolute;
+            top: 10px;
+            right: 40px;
+            opacity: 0.3;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .section {
+            padding: 40px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(135deg, #8B4513, #D2691E);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .insight-title {
+            font-size: 1.2em;
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .insight-text {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .recommendation-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .recommendation-title {
+            font-size: 1.2em;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .satisfaction-meter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        .meter-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .meter-bar {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107, #8bc34a, #4caf50);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Hasil Survei Teh Cascara</h1>
+            <p>Uji Rasa & Evaluasi Kegiatan Pelatihan Kelompok Tani</p>
+        </div>
+        
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">45</div>
+                <div class="stat-label">Total Responden</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Kelompok Tani</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4.2</div>
+                <div class="stat-label">Rata-rata Kepuasan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">87%</div>
+                <div class="stat-label">Minat Produksi</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">👥 Profil Responden</h2>
+            <div class="demographics-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Distribusi Umur</div>
+                    <div class="chart-wrapper">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Jenis Kelamin</div>
+                    <div class="chart-wrapper">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Kelompok Tani</div>
+                <div class="chart-wrapper">
+                    <canvas id="farmerGroupChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🍵 Evaluasi Produk Teh Cascara</h2>
+            <div class="chart-container">
+                <div class="chart-title">Penilaian Aspek Produk (Skala 1-5)</div>
+                <div class="chart-wrapper">
+                    <canvas id="productEvaluationChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="satisfaction-meter">
+                <div class="meter-item">
+                    <h4>Aroma & Potensi Jual</h4>
+                    <div class="meter-bar">
+                        <div class="meter-fill" style="width: 84%"></div>
+                    </div>
+                    <span>4.2/5</span>
+                </div>
+                <div class="meter-item">
+                    <h4>Rasa Menyegarkan</h4>
+                    <div class="meter-bar">
+                        <div class="meter-fill" style="width: 78%"></div>
+                    </div>
+                    <span>3.9/5</span>
+                </div>
+                <div class="meter-item">
+                    <h4>Visual Seduhan</h4>
+                    <div class="meter-bar">
+                        <div class="meter-fill" style="width: 82%"></div>
+                    </div>
+                    <span>4.1/5</span>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <div class="insight-title">💡 Key Insights</div>
+                <div class="insight-text">
+                    • 84% responden menilai aroma teh cascara menarik dan berpotensi jual<br>
+                    • Aspek visual seduhan mendapat penilaian tertinggi (4.1/5)<br>
+                    • Rasa masih perlu perbaikan untuk meningkatkan daya tarik konsumen
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">📚 Evaluasi Kegiatan Pelatihan</h2>
+            <div class="chart-container">
+                <div class="chart-title">Efektivitas Pelatihan (Skala 1-5)</div>
+                <div class="chart-wrapper">
+                    <canvas id="trainingEvaluationChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">Distribusi Tingkat Kepuasan Pelatihan</div>
+                <div class="chart-wrapper">
+                    <canvas id="trainingSatisfactionChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <div class="insight-title">📈 Highlights Pelatihan</div>
+                <div class="insight-text">
+                    • Materi pelatihan dinilai mudah dipahami dan relevan (4.3/5)<br>
+                    • Edukasi PIRT & HKI sangat bermanfaat bagi kelompok tani (4.4/5)<br>
+                    • Storytelling produk memberikan inspirasi pemasaran yang baik (4.1/5)
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🎯 Minat dan Potensi Pengembangan</h2>
+            <div class="demographics-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Minat Produksi Teh Cascara</div>
+                    <div class="chart-wrapper">
+                        <canvas id="productionInterestChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Kesiapan Mandiri Kelompok</div>
+                    <div class="chart-wrapper">
+                        <canvas id="independenceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="recommendation-box">
+                <div class="recommendation-title">🚀 Rekomendasi Tindak Lanjut</div>
+                <div class="insight-text">
+                    <strong>Jangka Pendek:</strong><br>
+                    • Perbaikan formulasi untuk meningkatkan cita rasa<br>
+                    • Pelatihan lanjutan teknik pengemasan dan labeling<br><br>
+                    <strong>Jangka Menengah:</strong><br>
+                    • Pendampingan proses perizinan PIRT<br>
+                    • Pengembangan channel pemasaran digital<br><br>
+                    <strong>Jangka Panjang:</strong><br>
+                    • Ekspansi ke pasar regional<br>
+                    • Diversifikasi produk turunan cascara
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Evaluasi Program Pengembangan Teh Cascara - Kelompok Tani Semarang</p>
+            <p>Data berdasarkan survei kepada 45 responden dari 3 kelompok tani</p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js configuration
+        Chart.defaults.font.family = 'Segoe UI';
+        Chart.defaults.font.size = 12;
+        
+        // Age Distribution Chart
+        const ageCtx = document.getElementById('ageChart').getContext('2d');
+        new Chart(ageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['< 20 tahun', '20-30 tahun', '31-50 tahun', '> 50 tahun'],
+                datasets: [{
+                    data: [8, 18, 15, 4],
+                    backgroundColor: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gender Distribution Chart
+        const genderCtx = document.getElementById('genderChart').getContext('2d');
+        new Chart(genderCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Laki-laki', 'Perempuan'],
+                datasets: [{
+                    data: [27, 18],
+                    backgroundColor: ['#3498db', '#e74c3c'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Farmer Group Chart
+        const farmerGroupCtx = document.getElementById('farmerGroupChart').getContext('2d');
+        new Chart(farmerGroupCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Ngudi Makmur', 'Sativa', 'Dinasti Makmur'],
+                datasets: [{
+                    label: 'Jumlah Responden',
+                    data: [16, 14, 15],
+                    backgroundColor: ['#8B4513', '#D2691E', '#CD853F'],
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 2
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Product Evaluation Chart
+        const productCtx = document.getElementById('productEvaluationChart').getContext('2d');
+        new Chart(productCtx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Aroma & Potensi Jual',
+                    'Rasa Menyegarkan', 
+                    'Visual Seduhan',
+                    'Minat Pengembangan',
+                    'Peluang Usaha'
+                ],
+                datasets: [{
+                    label: 'Rata-rata Penilaian',
+                    data: [4.2, 3.9, 4.1, 4.3, 4.0],
+                    backgroundColor: 'rgba(139, 69, 19, 0.2)',
+                    borderColor: '#8B4513',
+                    pointBackgroundColor: '#8B4513',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#8B4513'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Training Evaluation Chart
+        const trainingCtx = document.getElementById('trainingEvaluationChart').getContext('2d');
+        new Chart(trainingCtx, {
+            type: 'horizontalBar',
+            data: {
+                labels: [
+                    'Penyampaian Materi',
+                    'Pemahaman Limbah Kopi',
+                    'Edukasi PIRT & HKI',
+                    'Info Kemasan & Label',
+                    'Storytelling Produk'
+                ],
+                datasets: [{
+                    label: 'Skor Rata-rata',
+                    data: [4.3, 4.2, 4.4, 4.0, 4.1],
+                    backgroundColor: [
+                        '#FF6B6B',
+                        '#4ECDC4', 
+                        '#45B7D1',
+                        '#96CEB4',
+                        '#FFEAA7'
+                    ],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 5
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Training Satisfaction Distribution
+        const trainingSatCtx = document.getElementById('trainingSatisfactionChart').getContext('2d');
+        new Chart(trainingSatCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Sangat Tidak Setuju', 'Tidak Setuju', 'Netral', 'Setuju', 'Sangat Setuju'],
+                datasets: [{
+                    label: 'Jumlah Responden',
+                    data: [1, 2, 5, 23, 14],
+                    backgroundColor: [
+                        '#e74c3c',
+                        '#f39c12',
+                        '#95a5a6',
+                        '#27ae60',
+                        '#2ecc71'
+                    ],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Production Interest Chart
+        const interestCtx = document.getElementById('productionInterestChart').getContext('2d');
+        new Chart(interestCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Ya', 'Tidak', 'Mungkin'],
+                datasets: [{
+                    data: [39, 2, 4],
+                    backgroundColor: ['#27ae60', '#e74c3c', '#f39c12'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Independence Chart
+        const independenceCtx = document.getElementById('independenceChart').getContext('2d');
+        new Chart(independenceCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Ya', 'Tidak', 'Tidak Yakin'],
+                datasets: [{
+                    data: [32, 3, 10],
+                    backgroundColor: ['#2ecc71', '#e74c3c', '#95a5a6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
